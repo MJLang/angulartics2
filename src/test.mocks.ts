@@ -46,14 +46,17 @@ export function compile(tcb: TestComponentBuilder): Promise<ComponentFixture<any
 }
 
 export const TEST_ROUTER_PROVIDERS: any[] = [
-  provide(RouterUrlSerializer, {useClass: DefaultRouterUrlSerializer}),
   RouterOutletMap,
   provide(Location, {useClass: SpyLocation}),
+  provide(RouterUrlSerializer, {useClass: DefaultRouterUrlSerializer}),
   provide(Router, {
-    useFactory: (resolver: ComponentResolver, urlParser: RouterUrlSerializer, outletMap: RouterOutletMap, location: Location) => 
-      new Router("RootComponent", RootCmp, resolver, urlParser, outletMap, location),
+    useFactory: (componentResolver: ComponentResolver, urlSerializer: RouterUrlSerializer,
+                       routerOutletMap: RouterOutletMap, location: Location) => {
+      new Router(null, RootCmp, componentResolver, urlSerializer, routerOutletMap, location)
+    },
     deps: [ComponentResolver, RouterUrlSerializer, RouterOutletMap, Location]
-  })
+  }),
+  provide(RouteSegment, { useFactory: (r: any) => r.routeTree.root, deps: [Router] })
 ];
 
 export function advance(fixture: ComponentFixture<any>): void {

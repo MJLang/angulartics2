@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
 import {
+  async,
   it,
   inject,
   describe,
@@ -35,7 +36,7 @@ export function main() {
     });
 
     it('should not send on and event fields to the eventTrack function',
-      inject([TestComponentBuilder, Angulartics2],
+      async(inject([TestComponentBuilder, Angulartics2],
         (tcb: TestComponentBuilder, angulartics2: Angulartics2) => {
           return tcb.overrideTemplate(RootCmp, `<div [angulartics2On]="'click'" [angularticsEvent]="'InitiateSearch'" [angularticsCategory]="'Search'"></div>`)
             .createAsync(RootCmp)
@@ -59,10 +60,10 @@ export function main() {
                 });
               });
             });
-        }));
+        })));
 
     it('should infer event',
-      inject([TestComponentBuilder, Angulartics2],
+      async(inject([TestComponentBuilder, Angulartics2],
         (tcb: TestComponentBuilder, angulartics2: Angulartics2) => {
           return tcb.overrideTemplate(RootCmp, `<a [angulartics2On]="'click'" [angularticsCategory]="'Search'"></a>`)
             .createAsync(RootCmp)
@@ -86,7 +87,7 @@ export function main() {
                 });
               });
             });
-        }));
+        })));
 
   });
 

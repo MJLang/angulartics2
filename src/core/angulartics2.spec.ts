@@ -1,8 +1,10 @@
 import {Route, Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {
+  async,
   it,
   inject,
+  ddescribe,
   describe,
   expect,
   beforeEach,
@@ -42,7 +44,7 @@ export function main() {
       }));
     });
 
-    describe('Configuration', function() {
+    ddescribe('Configuration', function() {
       var EventSpy: any;
 
       beforeEachProviders(() => [
@@ -69,7 +71,7 @@ export function main() {
       }));
 
       it('should configure developer mode',
-        inject([TestComponentBuilder, Router, Angulartics2],
+        async(inject([TestComponentBuilder, Router, Angulartics2],
           (tcb: TestComponentBuilder, router: Router, angulartics2: Angulartics2) => {
             compile(tcb)
               .then((rtc) => fixture = rtc)
@@ -85,7 +87,7 @@ export function main() {
                   });
                 });
               });
-          }));
+          })));
 
     });
 
@@ -102,7 +104,7 @@ export function main() {
       });
 
       it('should track pages on route change',
-        inject([TestComponentBuilder, Router, Location, Angulartics2],
+        async(inject([TestComponentBuilder, Router, Location, Angulartics2],
           (tcb: TestComponentBuilder, router: Router, location: Location, angulartics2: Angulartics2) => {
             compile(tcb)
               .then((rtc) => fixture = rtc)
@@ -119,7 +121,7 @@ export function main() {
                   });
                 });
               });
-          }));
+          })));
     });
 
     describe('excludedRoutes', function() {
@@ -140,7 +142,7 @@ export function main() {
         }));
 
       it('should trigger page track if excludeRoutes is empty',
-        inject([TestComponentBuilder, Router, Location, Angulartics2],
+        async(inject([TestComponentBuilder, Router, Location, Angulartics2],
           (tcb: TestComponentBuilder, router: Router, location: Location, angulartics2: Angulartics2) => {
             compile(tcb)
               .then((rtc) => fixture = rtc)
@@ -158,10 +160,10 @@ export function main() {
                   });
                 });
               });
-          }));
+          })));
 
       it('should trigger page track if excludeRoutes do not match current route',
-        inject([TestComponentBuilder, Router, Location, Angulartics2],
+        async(inject([TestComponentBuilder, Router, Location, Angulartics2],
           (tcb: TestComponentBuilder, router: Router, location: Location, angulartics2: Angulartics2) => {
             compile(tcb)
               .then((rtc) => fixture = rtc)
@@ -179,10 +181,10 @@ export function main() {
                   });
                 });
               });
-          }));
+          })));
 
       it('should not trigger page track if current route is excluded',
-        inject([TestComponentBuilder, Router, Location, Angulartics2],
+        async(inject([TestComponentBuilder, Router, Location, Angulartics2],
           (tcb: TestComponentBuilder, router: Router, location: Location, angulartics2: Angulartics2) => {
             compile(tcb)
               .then((rtc) => fixture = rtc)
@@ -200,10 +202,10 @@ export function main() {
                   });
                 });
               });
-          }));
+          })));
 
       it('should not allow for multiple route exclusions to be specified',
-        inject([TestComponentBuilder, Router, Location, Angulartics2],
+        async(inject([TestComponentBuilder, Router, Location, Angulartics2],
           (tcb: TestComponentBuilder, router: Router, location: Location, angulartics2: Angulartics2) => {
             compile(tcb)
               .then((rtc) => fixture = rtc)
@@ -244,10 +246,10 @@ export function main() {
                   });
                 });
               });
-          }));
+          })));
 
       it('should allow specifying excluded routes as regular expressions',
-        inject([TestComponentBuilder, Router, Location, Angulartics2],
+        async(inject([TestComponentBuilder, Router, Location, Angulartics2],
           (tcb: TestComponentBuilder, router: Router, location: Location, angulartics2: Angulartics2) => {
             compile(tcb)
               .then((rtc) => fixture = rtc)
@@ -265,7 +267,7 @@ export function main() {
                   });
                 });
               });
-          }));
+          })));
 
     });
 
@@ -295,7 +297,7 @@ export function main() {
 
 
       it('should subscribe to and emit from ' + event,
-        inject([TestComponentBuilder, Angulartics2],
+        async(inject([TestComponentBuilder, Angulartics2],
           (tcb: TestComponentBuilder, angulartics2: Angulartics2) => {
             return compile(tcb)
               .then((rtc) => fixture = rtc)
@@ -307,7 +309,7 @@ export function main() {
                   expect(EventSpy).toHaveBeenCalledWith(`test: ${event}`);
                 }
               });
-          }));
+          })));
 
     });
 

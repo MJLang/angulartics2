@@ -1,5 +1,6 @@
 import {Router, Route} from '@angular/router';
 import {
+  async,
   it,
   inject,
   describe,
@@ -35,7 +36,7 @@ export function main() {
     });
 
     it('should track initial page',
-      inject([TestComponentBuilder, Router, Angulartics2, Angulartics2Kissmetrics],
+      async(inject([TestComponentBuilder, Router, Angulartics2, Angulartics2Kissmetrics],
         (tcb: TestComponentBuilder, router: Router, angulartics2: Angulartics2, angulartics2Kissmetrics: Angulartics2Kissmetrics) => {
           compile(tcb)
             .then((rtc) => fixture = rtc)
@@ -48,10 +49,10 @@ export function main() {
                 });
               });
             });
-        }));
+        })));
 
     it('should track pages',
-      inject([TestComponentBuilder, Router, Angulartics2, Angulartics2Kissmetrics],
+      async(inject([TestComponentBuilder, Router, Angulartics2, Angulartics2Kissmetrics],
         (tcb: TestComponentBuilder, router: Router, angulartics2: Angulartics2, angulartics2Kissmetrics: Angulartics2Kissmetrics) => {
           compile(tcb)
             .then((rtc) => fixture = rtc)
@@ -65,10 +66,10 @@ export function main() {
                 });
               });
             });
-        }));
+        })));
 
     it('should track events',
-      inject([TestComponentBuilder, Angulartics2, Angulartics2Kissmetrics],
+      async(inject([TestComponentBuilder, Angulartics2, Angulartics2Kissmetrics],
         (tcb: TestComponentBuilder, angulartics2: Angulartics2, angulartics2Kissmetrics: Angulartics2Kissmetrics) => {
           compile(tcb)
             .then((rtc) => fixture = rtc)
@@ -82,10 +83,10 @@ export function main() {
                 // });
               });
             });
-        }));
+        })));
 
     it('should set username',
-      inject([TestComponentBuilder, Angulartics2, Angulartics2Kissmetrics],
+      async(inject([TestComponentBuilder, Angulartics2, Angulartics2Kissmetrics],
         ((tcb: TestComponentBuilder, angulartics2: Angulartics2, angulartics2Kissmetrics: Angulartics2Kissmetrics) => {
           compile(tcb)
             .then((rtc) => fixture = rtc)
@@ -99,10 +100,10 @@ export function main() {
                 // });
               });
             });
-        })));
+        }))));
 
     it('should set user properties',
-      inject([TestComponentBuilder, Angulartics2, Angulartics2Kissmetrics],
+      async(inject([TestComponentBuilder, Angulartics2, Angulartics2Kissmetrics],
         ((tcb: TestComponentBuilder, angulartics2: Angulartics2, angulartics2Kissmetrics: Angulartics2Kissmetrics) => {
           compile(tcb)
             .then((rtc) => fixture = rtc)
@@ -116,7 +117,7 @@ export function main() {
                 });
               });
             });
-        })));
+        }))));
 
   });
 }

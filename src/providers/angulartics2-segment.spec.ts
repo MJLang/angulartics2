@@ -1,6 +1,7 @@
 import {Location} from '@angular/common';
 import {Router, Route} from '@angular/router';
 import {
+  async,
   it,
   inject,
   describe,
@@ -42,7 +43,7 @@ export function main() {
     });
 
     it('should track initial page',
-      inject([TestComponentBuilder, Router, Angulartics2, Angulartics2Segment],
+      async(inject([TestComponentBuilder, Router, Angulartics2, Angulartics2Segment],
         (tcb: TestComponentBuilder, router: Router, angulartics2: Angulartics2, angulartics2Segment: Angulartics2Segment) => {
           compile(tcb)
             .then((rtc) => fixture = rtc)
@@ -55,10 +56,10 @@ export function main() {
                 });
               });
             });
-        }));
+        })));
 
     it('should track pages',
-      inject([TestComponentBuilder, Router, Angulartics2, Angulartics2Segment, Location],
+      async(inject([TestComponentBuilder, Router, Angulartics2, Angulartics2Segment, Location],
         (tcb: TestComponentBuilder, router: Router, angulartics2: Angulartics2, angulartics2Segment: Angulartics2Segment, location: Location) => {
           compile(tcb)
             .then((rtc) => fixture = rtc)
@@ -73,10 +74,10 @@ export function main() {
                 });
               });
             });
-        }));
+        })));
 
     it('should track events',
-      inject([TestComponentBuilder, Angulartics2, Angulartics2Segment],
+      async(inject([TestComponentBuilder, Angulartics2, Angulartics2Segment],
         (tcb: TestComponentBuilder, angulartics2: Angulartics2, angulartics2Segment: Angulartics2Segment) => {
           compile(tcb)
             .then((rtc) => fixture = rtc)
@@ -90,10 +91,10 @@ export function main() {
                 // });
               });
             });
-        }));
+        })));
 
     it('should set user properties',
-      inject([TestComponentBuilder, Angulartics2, Angulartics2Segment],
+      async(inject([TestComponentBuilder, Angulartics2, Angulartics2Segment],
         ((tcb: TestComponentBuilder, angulartics2: Angulartics2, angulartics2Segment: Angulartics2Segment) => {
           compile(tcb)
             .then((rtc) => fixture = rtc)
@@ -107,10 +108,10 @@ export function main() {
                 });
               });
             });
-        })));
+        }))));
 
     it('should set user properties once',
-      inject([TestComponentBuilder, Angulartics2, Angulartics2Segment],
+      async(inject([TestComponentBuilder, Angulartics2, Angulartics2Segment],
         ((tcb: TestComponentBuilder, angulartics2: Angulartics2, angulartics2Segment: Angulartics2Segment) => {
           compile(tcb)
             .then((rtc) => fixture = rtc)
@@ -124,10 +125,10 @@ export function main() {
                 }, 100);
               });
             });
-        })));
+        }))));
 
     it('should set alias',
-      inject([TestComponentBuilder, Angulartics2, Angulartics2Segment],
+      async(inject([TestComponentBuilder, Angulartics2, Angulartics2Segment],
         (tcb: TestComponentBuilder, angulartics2: Angulartics2, angulartics2Segment: Angulartics2Segment) => {
           compile(tcb)
             .then((rtc) => fixture = rtc)
@@ -141,7 +142,7 @@ export function main() {
                 });
               });
             });
-        }));
+        })));
 
   });
 }

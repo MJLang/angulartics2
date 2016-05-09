@@ -1,5 +1,6 @@
 import {Router, Route} from '@angular/router';
 import {
+  async,
   it,
   inject,
   describe,
@@ -46,7 +47,7 @@ export function main() {
     });
 
     it('should track initial page',
-      inject([TestComponentBuilder, Router, Angulartics2, Angulartics2Mixpanel],
+      async(inject([TestComponentBuilder, Router, Angulartics2, Angulartics2Mixpanel],
         (tcb: TestComponentBuilder, router: Router, angulartics2: Angulartics2, angulartics2Mixpanel: Angulartics2Mixpanel) => {
           compile(tcb)
             .then((rtc) => fixture = rtc)
@@ -59,10 +60,10 @@ export function main() {
                 });
               });
             });
-        }));
+        })));
 
     it('should track pages',
-      inject([TestComponentBuilder, Router, Angulartics2, Angulartics2Mixpanel],
+      async(inject([TestComponentBuilder, Router, Angulartics2, Angulartics2Mixpanel],
         (tcb: TestComponentBuilder, router: Router, angulartics2: Angulartics2, angulartics2Mixpanel: Angulartics2Mixpanel) => {
           compile(tcb)
             .then((rtc) => fixture = rtc)
@@ -76,10 +77,10 @@ export function main() {
                 });
               });
             });
-        }));
+        })));
 
     it('should track events',
-      inject([TestComponentBuilder, Angulartics2, Angulartics2Mixpanel],
+      async(inject([TestComponentBuilder, Angulartics2, Angulartics2Mixpanel],
         (tcb: TestComponentBuilder, angulartics2: Angulartics2, angulartics2Mixpanel: Angulartics2Mixpanel) => {
           compile(tcb)
             .then((rtc) => fixture = rtc)
@@ -93,10 +94,10 @@ export function main() {
                 // });
               });
             });
-        }));
+        })));
 
     it('should set username',
-      inject([TestComponentBuilder, Angulartics2, Angulartics2Mixpanel],
+      async(inject([TestComponentBuilder, Angulartics2, Angulartics2Mixpanel],
         ((tcb: TestComponentBuilder, angulartics2: Angulartics2, angulartics2Mixpanel: Angulartics2Mixpanel) => {
           compile(tcb)
             .then((rtc) => fixture = rtc)
@@ -110,10 +111,10 @@ export function main() {
                 // });
               });
             });
-        })));
+        }))));
 
     it('should set user properties',
-      inject([TestComponentBuilder, Angulartics2, Angulartics2Mixpanel],
+      async(inject([TestComponentBuilder, Angulartics2, Angulartics2Mixpanel],
         ((tcb: TestComponentBuilder, angulartics2: Angulartics2, angulartics2Mixpanel: Angulartics2Mixpanel) => {
           compile(tcb)
             .then((rtc) => fixture = rtc)
@@ -127,10 +128,10 @@ export function main() {
                 // });
               });
             });
-        })));
+        }))));
 
     it('should set user properties once',
-      inject([TestComponentBuilder, Angulartics2, Angulartics2Mixpanel],
+      async(inject([TestComponentBuilder, Angulartics2, Angulartics2Mixpanel],
         ((tcb: TestComponentBuilder, angulartics2: Angulartics2, angulartics2Mixpanel: Angulartics2Mixpanel) => {
           compile(tcb)
             .then((rtc) => fixture = rtc)
@@ -144,10 +145,10 @@ export function main() {
                 // });
               });
             });
-        })));
+        }))));
 
     it('should set super properties',
-      inject([TestComponentBuilder, Angulartics2, Angulartics2Mixpanel],
+      async(inject([TestComponentBuilder, Angulartics2, Angulartics2Mixpanel],
         ((tcb: TestComponentBuilder, angulartics2: Angulartics2, angulartics2Mixpanel: Angulartics2Mixpanel) => {
           compile(tcb)
             .then((rtc) => fixture = rtc)
@@ -161,10 +162,10 @@ export function main() {
                 // });
               });
             });
-        })));
+        }))));
 
     it('should set super properties once',
-      inject([TestComponentBuilder, Angulartics2, Angulartics2Mixpanel],
+      async(inject([TestComponentBuilder, Angulartics2, Angulartics2Mixpanel],
         ((tcb: TestComponentBuilder, angulartics2: Angulartics2, angulartics2Mixpanel: Angulartics2Mixpanel) => {
           compile(tcb)
             .then((rtc) => fixture = rtc)
@@ -178,10 +179,10 @@ export function main() {
                 // });
               });
             });
-        })));
+        }))));
 
     it('should set alias',
-      inject([TestComponentBuilder, Angulartics2, Angulartics2Mixpanel],
+      async(inject([TestComponentBuilder, Angulartics2, Angulartics2Mixpanel],
         (tcb: TestComponentBuilder, angulartics2: Angulartics2, angulartics2Mixpanel: Angulartics2Mixpanel) => {
           compile(tcb)
             .then((rtc) => fixture = rtc)
@@ -195,7 +196,7 @@ export function main() {
                 // });
               });
             });
-        }));
+        })));
 
   });
 }
