@@ -1,14 +1,19 @@
-import {Router, Route} from 'angular2/router';
+import {Location} from '@angular/common';
+import {Router, Route} from '@angular/router';
 import {
   it,
   inject,
   describe,
-  beforeEachProviders,
-  ComponentFixture,
-  TestComponentBuilder
-} from 'angular2/testing';
+  expect,
+  beforeEach,
+  beforeEachProviders
+} from '@angular/core/testing';
+import {
+  TestComponentBuilder,
+  ComponentFixture
+} from '@angular/compiler/testing';
 
-import {TEST_ROUTER_PROVIDERS, HelloCmp, compile} from '../test.mocks';
+import {TEST_ROUTER_PROVIDERS, RootCmp, compile} from '../test.mocks';
 import {Angulartics2} from '../core/angulartics2';
 import {Angulartics2Segment} from './angulartics2-segment';
 
@@ -18,7 +23,7 @@ declare var window: any;
 export function main() {
   describe('Angulartics2Segment', () => {
 
-    var fixture: ComponentFixture;
+    var fixture: ComponentFixture<any>;
     var analytics: any;
 
     beforeEachProviders(() => [
@@ -41,7 +46,6 @@ export function main() {
         (tcb: TestComponentBuilder, router: Router, angulartics2: Angulartics2, angulartics2Segment: Angulartics2Segment) => {
           compile(tcb)
             .then((rtc) => fixture = rtc)
-            .then((_) => router.config([new Route({ path: '/', component: HelloCmp })]))
             .then((_) => {
               fixture.detectChanges();
               return new Promise((resolve) => {
@@ -54,16 +58,16 @@ export function main() {
         }));
 
     it('should track pages',
-      inject([TestComponentBuilder, Router, Angulartics2, Angulartics2Segment],
-        (tcb: TestComponentBuilder, router: Router, angulartics2: Angulartics2, angulartics2Segment: Angulartics2Segment) => {
+      inject([TestComponentBuilder, Router, Angulartics2, Angulartics2Segment, Location],
+        (tcb: TestComponentBuilder, router: Router, angulartics2: Angulartics2, angulartics2Segment: Angulartics2Segment, location: Location) => {
           compile(tcb)
             .then((rtc) => fixture = rtc)
-            .then((_) => router.config([new Route({ path: '/abc', component: HelloCmp })]))
             .then((_) => router.navigateByUrl('/abc'))
             .then((_) => {
               fixture.detectChanges();
               return new Promise((resolve) => {
                 setTimeout(() => {
+                  expect(location.path()).toBe('/abc');
                   expect(analytics.page).toHaveBeenCalledWith('/abc');
                   resolve();
                 });

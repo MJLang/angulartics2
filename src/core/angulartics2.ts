@@ -1,7 +1,7 @@
-import {Injectable} from 'angular2/core';
+import {Injectable} from '@angular/core';
 import {ReplaySubject} from 'rxjs/ReplaySubject';
-import {Router} from 'angular2/router';
-import {Location} from 'angular2/platform/common';
+import {Router} from '@angular/router';
+import {Location} from '@angular/common';
 
 @Injectable()
 export class Angulartics2 {
@@ -71,12 +71,13 @@ export class Angulartics2 {
 	}
 
   spyRouter(router: Router, location: Location) {
-		router.subscribe((route) => {
+		router.changes.subscribe(() => {
+			console.log(location);
 			if (!this.settings.developerMode) {
-        let url: string = location.prepareExternalUrl(route);
+				var url = location.path();
         if (this.settings.pageTracking.autoTrackVirtualPages && !this.matchesExcludedRoute(url)) {
           this.pageTrack.next({
-            path: this.settings.pageTracking.basePath.length ? this.settings.pageTracking.basePath + route : location.prepareExternalUrl(url),
+            path: this.settings.pageTracking.basePath.length ? this.settings.pageTracking.basePath + url : location.prepareExternalUrl(url),
             location: location
           });
         }

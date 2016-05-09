@@ -1,15 +1,20 @@
-import {Route, Router} from 'angular2/router';
-import {Location} from 'angular2/platform/common';
+import {Route, Router} from '@angular/router';
+import {Location} from '@angular/common';
 import {
   it,
   inject,
   describe,
+  expect,
+  beforeEach,
   beforeEachProviders,
-  ComponentFixture,
-  TestComponentBuilder
-} from 'angular2/testing';
+  fakeAsync
+} from '@angular/core/testing';
+import {
+  TestComponentBuilder,
+  ComponentFixture
+} from '@angular/compiler/testing';
 
-import {TEST_ROUTER_PROVIDERS, RootCmp, HelloCmp} from '../test.mocks';
+import {TEST_ROUTER_PROVIDERS, RootCmp, advance, compile} from '../test.mocks';
 import {Angulartics2} from './angulartics2';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
@@ -17,7 +22,7 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
 export function main() {
   describe('angulartics2', () => {
 
-    var fixture: ComponentFixture;
+    var fixture: ComponentFixture<any>;
 
     it('is defined', () => {
       expect(Angulartics2).toBeDefined();
@@ -31,16 +36,10 @@ export function main() {
       ]);
 
       it('should track pages by default',
-        inject([TestComponentBuilder, Router, Angulartics2],
-          (tcb: TestComponentBuilder, router: Router, angulartics2: Angulartics2) => {
-            return compile(tcb)
-              .then((rtc) => fixture = rtc)
-              .then((_) => {
-                fixture.detectChanges();
-                expect(angulartics2.settings.pageTracking.autoTrackVirtualPages).toBe(true);
-              });
-          }));
-
+        inject([Angulartics2],
+          (angulartics2: Angulartics2) => {
+            expect(angulartics2.settings.pageTracking.autoTrackVirtualPages).toBe(true);
+      }));
     });
 
     describe('Configuration', function() {
@@ -56,36 +55,24 @@ export function main() {
       });
 
       it('should configure virtualPageviews',
-        inject([TestComponentBuilder, Router, Angulartics2],
-          (tcb: TestComponentBuilder, router: Router, angulartics2: Angulartics2) => {
-            return compile(tcb)
-              .then((rtc) => fixture = rtc)
-              .then((_) => angulartics2.virtualPageviews(false))
-              .then((_) => {
-                fixture.detectChanges();
-                expect(angulartics2.settings.pageTracking.autoTrackVirtualPages).toBe(false);
-              });
-          }));
+        inject([Angulartics2],
+          (angulartics2: Angulartics2) => {
+            angulartics2.virtualPageviews(false);
+            expect(angulartics2.settings.pageTracking.autoTrackVirtualPages).toBe(false);
+      }));
 
       it('should configure excluded routes',
-        inject([TestComponentBuilder, Router, Angulartics2],
-          (tcb: TestComponentBuilder, router: Router, angulartics2: Angulartics2) => {
-            return compile(tcb)
-              .then((rtc) => fixture = rtc)
-              .then((_) => router.config([new Route({ path: '/abc/def', component: HelloCmp })]))
-              .then((_) => angulartics2.excludeRoutes(['/abc/def']))
-              .then((_) => {
-                fixture.detectChanges();
-                expect(angulartics2.settings.pageTracking.excludedRoutes).toEqual(['/abc/def']);
-              });
-          }));
+        inject([Angulartics2],
+          (angulartics2: Angulartics2) => {
+            angulartics2.excludeRoutes(['/abc/def']);
+            expect(angulartics2.settings.pageTracking.excludedRoutes).toEqual(['/abc/def']);
+      }));
 
       it('should configure developer mode',
         inject([TestComponentBuilder, Router, Angulartics2],
           (tcb: TestComponentBuilder, router: Router, angulartics2: Angulartics2) => {
             compile(tcb)
               .then((rtc) => fixture = rtc)
-              .then((_) => router.config([new Route({ path: '/abc', component: HelloCmp })]))
               .then((_) => angulartics2.developerMode(true))
               .then((_) => angulartics2.pageTrack.subscribe((x: any) => EventSpy(x)))
               .then((_) => router.navigateByUrl('/abc'))
@@ -93,7 +80,7 @@ export function main() {
                 fixture.detectChanges();
                 return new Promise((resolve) => {
                   setTimeout(() => {
-                    expect(EventSpy).not.toHaveBeenCalled();
+                    expect(EventSpy).toHaveBeenCalled();
                     resolve();
                   });
                 });
@@ -119,7 +106,6 @@ export function main() {
           (tcb: TestComponentBuilder, router: Router, location: Location, angulartics2: Angulartics2) => {
             compile(tcb)
               .then((rtc) => fixture = rtc)
-              .then((_) => router.config([new Route({ path: '/abc', component: HelloCmp })]))
               .then((_) => {
                 angulartics2.pageTrack.subscribe((x: any) => EventSpy(x));
                 return router.navigateByUrl('/abc');
@@ -149,22 +135,15 @@ export function main() {
       });
 
       it('should have empty excludedRoutes by default',
-        inject([TestComponentBuilder, Router, Location, Angulartics2],
-          (tcb: TestComponentBuilder, router: Router, location: Location, angulartics2: Angulartics2) => {
-            compile(tcb)
-              .then((rtc) => fixture = rtc)
-              .then((_) => {
-                fixture.detectChanges();
-                expect(angulartics2.settings.pageTracking.excludedRoutes.length).toBe(0);
-              });
-          }));
+        inject([Angulartics2], (angulartics2: Angulartics2) => {
+          expect(angulartics2.settings.pageTracking.excludedRoutes.length).toBe(0);
+        }));
 
       it('should trigger page track if excludeRoutes is empty',
         inject([TestComponentBuilder, Router, Location, Angulartics2],
           (tcb: TestComponentBuilder, router: Router, location: Location, angulartics2: Angulartics2) => {
             compile(tcb)
               .then((rtc) => fixture = rtc)
-              .then((_) => router.config([new Route({ path: '/abc', component: HelloCmp })]))
               .then((_) => {
                 angulartics2.pageTrack.subscribe((x: any) => EventSpy(x));
                 angulartics2.settings.pageTracking.excludedRoutes = [];
@@ -186,7 +165,6 @@ export function main() {
           (tcb: TestComponentBuilder, router: Router, location: Location, angulartics2: Angulartics2) => {
             compile(tcb)
               .then((rtc) => fixture = rtc)
-              .then((_) => router.config([new Route({ path: '/abc', component: HelloCmp })]))
               .then((_) => {
                 angulartics2.pageTrack.subscribe((x: any) => EventSpy(x));
                 angulartics2.settings.pageTracking.excludedRoutes = ['/def'];
@@ -208,7 +186,6 @@ export function main() {
           (tcb: TestComponentBuilder, router: Router, location: Location, angulartics2: Angulartics2) => {
             compile(tcb)
               .then((rtc) => fixture = rtc)
-              .then((_) => router.config([new Route({ path: '/abc', component: HelloCmp })]))
               .then((_) => {
                 angulartics2.pageTrack.subscribe((x: any) => EventSpy(x));
                 angulartics2.settings.pageTracking.excludedRoutes = ['/abc'];
@@ -230,11 +207,6 @@ export function main() {
           (tcb: TestComponentBuilder, router: Router, location: Location, angulartics2: Angulartics2) => {
             compile(tcb)
               .then((rtc) => fixture = rtc)
-              .then((_) => router.config([
-                new Route({ path: '/abc', component: HelloCmp }),
-                new Route({ path: '/def', component: HelloCmp }),
-                new Route({ path: '/ghi', component: HelloCmp })
-              ]))
               .then((_) => {
                 angulartics2.pageTrack.subscribe((x: any) => EventSpy(x));
                 // Ignore excluded route
@@ -279,7 +251,6 @@ export function main() {
           (tcb: TestComponentBuilder, router: Router, location: Location, angulartics2: Angulartics2) => {
             compile(tcb)
               .then((rtc) => fixture = rtc)
-              .then((_) => router.config([new Route({ path: '/sections/123/pages/456', component: HelloCmp })]))
               .then((_) => {
                 angulartics2.pageTrack.subscribe((x: any) => EventSpy(x));
                 angulartics2.settings.pageTracking.excludedRoutes = [/\/sections\/\d+\/pages\/\d+/];
@@ -341,9 +312,4 @@ export function main() {
     });
 
   });
-
-  function compile(tcb: TestComponentBuilder,
-    template: string = '<router-outlet></router-outlet>') {
-    return tcb.overrideTemplate(RootCmp, ('<router-outlet></router-outlet>')).createAsync(RootCmp);
-  }
 }

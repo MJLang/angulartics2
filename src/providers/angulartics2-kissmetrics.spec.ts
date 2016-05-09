@@ -1,14 +1,18 @@
-import {Router, Route} from 'angular2/router';
+import {Router, Route} from '@angular/router';
 import {
   it,
   inject,
   describe,
-  beforeEachProviders,
-  ComponentFixture,
-  TestComponentBuilder
-} from 'angular2/testing';
+  expect,
+  beforeEach,
+  beforeEachProviders
+} from '@angular/core/testing';
+import {
+  TestComponentBuilder,
+  ComponentFixture
+} from '@angular/compiler/testing';
 
-import {TEST_ROUTER_PROVIDERS, HelloCmp, compile} from '../test.mocks';
+import {TEST_ROUTER_PROVIDERS, RootCmp, compile} from '../test.mocks';
 import {Angulartics2} from '../core/angulartics2';
 import {Angulartics2Kissmetrics} from './angulartics2-kissmetrics';
 
@@ -18,7 +22,7 @@ declare var window: any;
 export function main() {
   describe('Angulartics2Kissmetrics', () => {
     var _kmq: Array<any>;
-    var fixture: ComponentFixture;
+    var fixture: ComponentFixture<any>;
 
     beforeEachProviders(() => [
       TEST_ROUTER_PROVIDERS,
@@ -35,7 +39,6 @@ export function main() {
         (tcb: TestComponentBuilder, router: Router, angulartics2: Angulartics2, angulartics2Kissmetrics: Angulartics2Kissmetrics) => {
           compile(tcb)
             .then((rtc) => fixture = rtc)
-            .then((_) => router.config([new Route({ path: '/', component: HelloCmp })]))
             .then((_) => {
               fixture.detectChanges();
               return new Promise((resolve) => {
@@ -52,7 +55,6 @@ export function main() {
         (tcb: TestComponentBuilder, router: Router, angulartics2: Angulartics2, angulartics2Kissmetrics: Angulartics2Kissmetrics) => {
           compile(tcb)
             .then((rtc) => fixture = rtc)
-            .then((_) => router.config([new Route({ path: '/abc', component: HelloCmp })]))
             .then((_) => router.navigateByUrl('/abc'))
             .then((_) => {
               fixture.detectChanges();

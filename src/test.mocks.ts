@@ -1,21 +1,36 @@
-import {provide, Component} from 'angular2/core';
-import {ROUTER_PRIMARY_COMPONENT, ROUTER_DIRECTIVES, RouteRegistry, Router} from 'angular2/router';
-import {Location} from 'angular2/platform/common';
-import {RootRouter} from 'angular2/src/router/router';
-import {SpyLocation} from 'angular2/src/mock/location_mock';
-import {TestComponentBuilder, ComponentFixture} from 'angular2/testing';
-
-@Component({
-  selector: 'test',
-  template: '<div></div>'
-})
-class MockPrimaryComponent { }
+import {provide, Component, ComponentResolver} from '@angular/core';
+import {
+  Router,
+  RouterOutletMap,
+  RouteSegment,
+  Route,
+  ROUTER_DIRECTIVES,
+  Routes,
+  RouterUrlSerializer,
+  DefaultRouterUrlSerializer,
+  OnActivate,
+  CanDeactivate
+} from '@angular/router';
+import {Location} from '@angular/common';
+import {tick} from '@angular/core/testing';
+import {SpyLocation} from '@angular/common/testing';
+import {
+  TestComponentBuilder,
+  ComponentFixture
+} from '@angular/compiler/testing';
 
 @Component({
   selector: 'root-comp',
   template: `<router-outlet></router-outlet>`,
   directives: [ROUTER_DIRECTIVES]
 })
+@Routes([
+  new Route({ path: '/', component: HelloCmp }),
+  new Route({ path: '/abc', component: HelloCmp }),
+  new Route({ path: '/def', component: HelloCmp }),
+  new Route({ path: '/ghi', component: HelloCmp }),
+  new Route({ path: '/sections/123/pages/456', component: HelloCmp })
+ ])
 export class RootCmp {
   name: string;
 }
@@ -26,13 +41,22 @@ export class HelloCmp {
   constructor() { this.greeting = 'hello'; }
 }
 
-export function compile(tcb: TestComponentBuilder): Promise<ComponentFixture> {
+export function compile(tcb: TestComponentBuilder): Promise<ComponentFixture<any>> {
   return tcb.createAsync(RootCmp);
 }
 
 export const TEST_ROUTER_PROVIDERS: any[] = [
-  RouteRegistry,
-  provide(Location, { useClass: SpyLocation }),
-  provide(ROUTER_PRIMARY_COMPONENT, { useValue: MockPrimaryComponent }),
-  provide(Router, { useClass: RootRouter })
+  provide(RouterUrlSerializer, {useClass: DefaultRouterUrlSerializer}),
+  RouterOutletMap,
+  provide(Location, {useClass: SpyLocation}),
+  provide(Router, {
+    useFactory: (resolver: ComponentResolver, urlParser: RouterUrlSerializer, outletMap: RouterOutletMap, location: Location) => 
+      new Router("RootComponent", RootCmp, resolver, urlParser, outletMap, location),
+    deps: [ComponentResolver, RouterUrlSerializer, RouterOutletMap, Location]
+  })
 ];
+
+export function advance(fixture: ComponentFixture<any>): void {
+  tick();
+  fixture.detectChanges();
+}

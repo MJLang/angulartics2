@@ -1,11 +1,15 @@
-import {Directive, Injectable, Input, ElementRef, AfterContentInit} from 'angular2/core';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+import {Directive, Injectable, Input, ElementRef, AfterContentInit} from '@angular/core';
+import {EventManager} from '@angular/platform-browser';
+import {DomAdapter} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {Angulartics2} from './angulartics2';
 
 @Injectable()
 @Directive({
-	selector: '[angulartics2On]'
+	selector: '[angulartics2On]',
+	providers: [
+		DomAdapter
+	]
 })
 export class Angulartics2On implements AfterContentInit {
 	@Input('angulartics2On') angulartics2On: string;
@@ -14,21 +18,19 @@ export class Angulartics2On implements AfterContentInit {
 	@Input() angularticsIf: string;
 	@Input() angularticsProperties: any;
 
-	private elRef: ElementRef;
 	private el: any;
-	private angulartics2: Angulartics2;
 
 	constructor(
-		elRef: ElementRef,
-		angulartics2: Angulartics2
+		private elRef: ElementRef,
+		private angulartics2: Angulartics2,
+		private eventManager: EventManager,
+		private DOM: DomAdapter
 	) {
-		this.elRef = elRef;
 		this.el = elRef.nativeElement;
-		this.angulartics2 = angulartics2;
 	}
 
 	ngAfterContentInit() {
-		DOM.on(this.el, this.angulartics2On, (event: any) => this.eventTrack(event));
+		this.eventManager.addEventListener(this.el, this.angulartics2On, (event: any) => this.eventTrack(event));
   }
 
 	eventTrack(event: any) {
@@ -59,11 +61,11 @@ export class Angulartics2On implements AfterContentInit {
 
 	private isCommand() {
 		return ['a:', 'button:', 'button:button', 'button:submit', 'input:button', 'input:submit'].indexOf(
-			DOM.tagName(this.el).toLowerCase() + ':' + (DOM.type(this.el) || '')) >= 0;
+			this.DOM.tagName(this.el).toLowerCase() + ':' + (this.DOM.type(this.el) || '')) >= 0;
 	}
 
 	private inferEventName() {
-		if (this.isCommand()) return DOM.getText(this.el) || DOM.getValue(this.el);
-		return DOM.getProperty(this.el, 'id') || DOM.getProperty(this.el, 'name') || DOM.tagName(this.el);
+		if (this.isCommand()) return this.DOM.getText(this.el) || this.DOM.getValue(this.el);
+		return this.DOM.getProperty(this.el, 'id') || this.DOM.getProperty(this.el, 'name') || this.DOM.tagName(this.el);
 	}
 }

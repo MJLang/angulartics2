@@ -1,13 +1,16 @@
-import {Component} from 'angular2/core';
-import {ROUTER_DIRECTIVES, Router} from 'angular2/router';
+import {Component} from '@angular/core';
 import {
   it,
   inject,
   describe,
-  beforeEachProviders,
-  ComponentFixture,
-  TestComponentBuilder
-} from 'angular2/testing';
+  expect,
+  beforeEach,
+  beforeEachProviders
+} from '@angular/core/testing';
+import {
+  TestComponentBuilder,
+  ComponentFixture
+} from '@angular/compiler/testing';
 
 import {TEST_ROUTER_PROVIDERS} from '../test.mocks';
 import {Angulartics2} from './angulartics2';
@@ -18,7 +21,7 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
 export function main() {
   describe('angulartics2On', () => {
 
-    var fixture: ComponentFixture;
+    var fixture: ComponentFixture<any>;
     var compiled: any;
     var EventSpy: any;
 
@@ -32,9 +35,36 @@ export function main() {
     });
 
     it('should not send on and event fields to the eventTrack function',
-      inject([TestComponentBuilder, Router, Angulartics2],
-        (tcb: TestComponentBuilder, router: Router, angulartics2: Angulartics2) => {
+      inject([TestComponentBuilder, Angulartics2],
+        (tcb: TestComponentBuilder, angulartics2: Angulartics2) => {
           return tcb.overrideTemplate(RootCmp, `<div [angulartics2On]="'click'" [angularticsEvent]="'InitiateSearch'" [angularticsCategory]="'Search'"></div>`)
+            .createAsync(RootCmp)
+            .then((rtc) => fixture = rtc)
+            .then((_) => {
+              fixture.detectChanges();
+              return new Promise((resolve) => {
+                expect(EventSpy).not.toHaveBeenCalled();
+                angulartics2.eventTrack.subscribe((x: any) => EventSpy(x));
+                compiled = fixture.debugElement.nativeElement.children[0];
+                compiled.click();
+                resolve();
+              });
+            })
+            .then((_) => {
+              fixture.detectChanges();
+              return new Promise((resolve) => {
+                setTimeout(() => {
+                  expect(EventSpy).toHaveBeenCalledWith({ action: 'InitiateSearch', properties: { category: 'Search', eventType: 'click' } });
+                  resolve();
+                });
+              });
+            });
+        }));
+
+    it('should infer event',
+      inject([TestComponentBuilder, Angulartics2],
+        (tcb: TestComponentBuilder, angulartics2: Angulartics2) => {
+          return tcb.overrideTemplate(RootCmp, `<a [angulartics2On]="'click'" [angularticsCategory]="'Search'"></a>`)
             .createAsync(RootCmp)
             .then((rtc) => fixture = rtc)
             .then((_) => {
@@ -62,8 +92,8 @@ export function main() {
 
   @Component({
     selector: 'root-comp',
-    template: `<router-outlet></router-outlet>`,
-    directives: [ROUTER_DIRECTIVES, Angulartics2On]
+    template: '',
+    directives: [Angulartics2On]
   })
   class RootCmp {
     name: string;
