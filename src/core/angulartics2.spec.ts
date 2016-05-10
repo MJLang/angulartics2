@@ -3,6 +3,7 @@ import {Location} from '@angular/common';
 import {
   async,
   it,
+  iit,
   inject,
   ddescribe,
   describe,
@@ -44,7 +45,7 @@ export function main() {
       }));
     });
 
-    ddescribe('Configuration', function() {
+    describe('Configuration', function() {
       var EventSpy: any;
 
       beforeEachProviders(() => [
@@ -71,22 +72,14 @@ export function main() {
       }));
 
       it('should configure developer mode',
-        async(inject([TestComponentBuilder, Router, Angulartics2],
+        fakeAsync(inject([TestComponentBuilder, Router, Angulartics2],
           (tcb: TestComponentBuilder, router: Router, angulartics2: Angulartics2) => {
-            compile(tcb)
-              .then((rtc) => fixture = rtc)
-              .then((_) => angulartics2.developerMode(true))
-              .then((_) => angulartics2.pageTrack.subscribe((x: any) => EventSpy(x)))
-              .then((_) => router.navigateByUrl('/abc'))
-              .then((_) => {
-                fixture.detectChanges();
-                return new Promise((resolve) => {
-                  setTimeout(() => {
-                    expect(EventSpy).toHaveBeenCalled();
-                    resolve();
-                  });
-                });
-              });
+            fixture = tcb.createFakeAsync(RootCmp);
+            angulartics2.developerMode(true);
+            angulartics2.pageTrack.subscribe((x: any) => EventSpy(x));
+            router.navigateByUrl('/abc');
+            advance(fixture);
+            expect(EventSpy).toHaveBeenCalled();
           })));
 
     });
@@ -104,23 +97,13 @@ export function main() {
       });
 
       it('should track pages on route change',
-        async(inject([TestComponentBuilder, Router, Location, Angulartics2],
+        fakeAsync(inject([TestComponentBuilder, Router, Location, Angulartics2],
           (tcb: TestComponentBuilder, router: Router, location: Location, angulartics2: Angulartics2) => {
-            compile(tcb)
-              .then((rtc) => fixture = rtc)
-              .then((_) => {
-                angulartics2.pageTrack.subscribe((x: any) => EventSpy(x));
-                return router.navigateByUrl('/abc');
-              })
-              .then((_) => {
-                fixture.detectChanges();
-                return new Promise((resolve) => {
-                  setTimeout(() => {
-                    expect(EventSpy).toHaveBeenCalledWith({ path: '/abc', location: location });
-                    resolve();
-                  });
-                });
-              });
+            fixture = tcb.createFakeAsync(RootCmp);
+            angulartics2.pageTrack.subscribe((x: any) => EventSpy(x));
+            router.navigateByUrl('/abc');
+            advance(fixture);
+            expect(EventSpy).toHaveBeenCalledWith({ path: '/abc', location: location });
           })));
     });
 
@@ -142,131 +125,65 @@ export function main() {
         }));
 
       it('should trigger page track if excludeRoutes is empty',
-        async(inject([TestComponentBuilder, Router, Location, Angulartics2],
+        fakeAsync(inject([TestComponentBuilder, Router, Location, Angulartics2],
           (tcb: TestComponentBuilder, router: Router, location: Location, angulartics2: Angulartics2) => {
-            compile(tcb)
-              .then((rtc) => fixture = rtc)
-              .then((_) => {
-                angulartics2.pageTrack.subscribe((x: any) => EventSpy(x));
-                angulartics2.settings.pageTracking.excludedRoutes = [];
-                return router.navigateByUrl('/abc');
-              })
-              .then((_) => {
-                fixture.detectChanges();
-                return new Promise((resolve) => {
-                  setTimeout(() => {
-                    expect(EventSpy).toHaveBeenCalledWith({ path: '/abc', location: location });
-                    resolve();
-                  });
-                });
-              });
+            fixture = tcb.createFakeAsync(RootCmp);
+            angulartics2.pageTrack.subscribe((x: any) => EventSpy(x));
+            angulartics2.settings.pageTracking.excludedRoutes = [];
+            router.navigateByUrl('/abc');
+            advance(fixture);
+            expect(EventSpy).toHaveBeenCalledWith({ path: '/abc', location: location });
           })));
 
       it('should trigger page track if excludeRoutes do not match current route',
-        async(inject([TestComponentBuilder, Router, Location, Angulartics2],
+        fakeAsync(inject([TestComponentBuilder, Router, Location, Angulartics2],
           (tcb: TestComponentBuilder, router: Router, location: Location, angulartics2: Angulartics2) => {
-            compile(tcb)
-              .then((rtc) => fixture = rtc)
-              .then((_) => {
-                angulartics2.pageTrack.subscribe((x: any) => EventSpy(x));
-                angulartics2.settings.pageTracking.excludedRoutes = ['/def'];
-                return router.navigateByUrl('/abc');
-              })
-              .then((_) => {
-                fixture.detectChanges();
-                return new Promise((resolve) => {
-                  setTimeout(() => {
-                    expect(EventSpy).toHaveBeenCalledWith({ path: '/abc', location: location });
-                    resolve();
-                  });
-                });
-              });
+            fixture = tcb.createFakeAsync(RootCmp);
+            angulartics2.pageTrack.subscribe((x: any) => EventSpy(x));
+            angulartics2.settings.pageTracking.excludedRoutes = ['/def'];
+            router.navigateByUrl('/abc');
+            advance(fixture);
+            expect(EventSpy).toHaveBeenCalledWith({ path: '/abc', location: location });
           })));
 
       it('should not trigger page track if current route is excluded',
-        async(inject([TestComponentBuilder, Router, Location, Angulartics2],
+        fakeAsync(inject([TestComponentBuilder, Router, Location, Angulartics2],
           (tcb: TestComponentBuilder, router: Router, location: Location, angulartics2: Angulartics2) => {
-            compile(tcb)
-              .then((rtc) => fixture = rtc)
-              .then((_) => {
-                angulartics2.pageTrack.subscribe((x: any) => EventSpy(x));
-                angulartics2.settings.pageTracking.excludedRoutes = ['/abc'];
-                return router.navigateByUrl('/abc');
-              })
-              .then((_) => {
-                fixture.detectChanges();
-                return new Promise((resolve) => {
-                  setTimeout(() => {
-                    expect(EventSpy).not.toHaveBeenCalledWith({ path: '/abc', location: location });
-                    resolve();
-                  });
-                });
-              });
+            fixture = tcb.createFakeAsync(RootCmp);
+            angulartics2.pageTrack.subscribe((x: any) => EventSpy(x));
+            angulartics2.settings.pageTracking.excludedRoutes = ['/abc'];
+            router.navigateByUrl('/abc');
+            advance(fixture);
+            expect(EventSpy).not.toHaveBeenCalledWith({ path: '/abc', location: location });
           })));
 
       it('should not allow for multiple route exclusions to be specified',
-        async(inject([TestComponentBuilder, Router, Location, Angulartics2],
+        fakeAsync(inject([TestComponentBuilder, Router, Location, Angulartics2],
           (tcb: TestComponentBuilder, router: Router, location: Location, angulartics2: Angulartics2) => {
-            compile(tcb)
-              .then((rtc) => fixture = rtc)
-              .then((_) => {
-                angulartics2.pageTrack.subscribe((x: any) => EventSpy(x));
-                // Ignore excluded route
-                angulartics2.settings.pageTracking.excludedRoutes = ['/def', '/abc'];
-                return router.navigateByUrl('/abc');
-              })
-              .then((_) => {
-                fixture.detectChanges();
-                return new Promise((resolve) => {
-                  setTimeout(() => {
-                    expect(EventSpy).not.toHaveBeenCalledWith({ path: '/abc', location: location });
-                    resolve();
-                  });
-                });
-              })
-              .then((_) => router.navigateByUrl('/def'))
-              .then((_) => {
-                // Ignore excluded route
-                fixture.detectChanges();
-                return new Promise((resolve) => {
-                  setTimeout(() => {
-                    expect(EventSpy).not.toHaveBeenCalledWith({ path: '/def', location: location });
-                    resolve();
-                  });
-                });
-              })
-              .then((_) => router.navigateByUrl('/ghi'))
-              .then((_) => {
-                // Track non-excluded route
-                fixture.detectChanges();
-                return new Promise((resolve) => {
-                  setTimeout(() => {
-                    expect(EventSpy).toHaveBeenCalledWith({ path: '/ghi', location: location });
-                    resolve();
-                  });
-                });
-              });
+            fixture = tcb.createFakeAsync(RootCmp);
+            angulartics2.pageTrack.subscribe((x: any) => EventSpy(x));
+            // Ignore excluded route
+            angulartics2.settings.pageTracking.excludedRoutes = ['/def', '/abc'];
+            router.navigateByUrl('/abc');
+            advance(fixture);
+            expect(EventSpy).not.toHaveBeenCalledWith({ path: '/abc', location: location });
+            router.navigateByUrl('/def');
+            advance(fixture);
+            expect(EventSpy).not.toHaveBeenCalledWith({ path: '/def', location: location });
+            router.navigateByUrl('/ghi');
+            advance(fixture);
+            expect(EventSpy).toHaveBeenCalledWith({ path: '/ghi', location: location });
           })));
 
       it('should allow specifying excluded routes as regular expressions',
-        async(inject([TestComponentBuilder, Router, Location, Angulartics2],
+        fakeAsync(inject([TestComponentBuilder, Router, Location, Angulartics2],
           (tcb: TestComponentBuilder, router: Router, location: Location, angulartics2: Angulartics2) => {
-            compile(tcb)
-              .then((rtc) => fixture = rtc)
-              .then((_) => {
-                angulartics2.pageTrack.subscribe((x: any) => EventSpy(x));
-                angulartics2.settings.pageTracking.excludedRoutes = [/\/sections\/\d+\/pages\/\d+/];
-                return router.navigateByUrl('/sections/123/pages/456');
-              })
-              .then((_) => {
-                fixture.detectChanges();
-                return new Promise((resolve) => {
-                  setTimeout(() => {
-                    expect(EventSpy).not.toHaveBeenCalledWith({ path: '/sections/123/pages/456', location: location });
-                    resolve();
-                  });
-                });
-              });
+            fixture = tcb.createFakeAsync(RootCmp);
+            angulartics2.pageTrack.subscribe((x: any) => EventSpy(x));
+            angulartics2.settings.pageTracking.excludedRoutes = [/\/sections\/\d+\/pages\/\d+/];
+            router.navigateByUrl('/sections/123/pages/456');
+            advance(fixture);
+            expect(EventSpy).not.toHaveBeenCalledWith({ path: '/sections/123/pages/456', location: location });
           })));
 
     });
@@ -295,20 +212,16 @@ export function main() {
         EventSpy = jasmine.createSpy('EventSpy');
       });
 
-
       it('should subscribe to and emit from ' + event,
-        async(inject([TestComponentBuilder, Angulartics2],
+        fakeAsync(inject([TestComponentBuilder, Angulartics2],
           (tcb: TestComponentBuilder, angulartics2: Angulartics2) => {
-            return compile(tcb)
-              .then((rtc) => fixture = rtc)
-              .then((_) => {
-                fixture.detectChanges();
-                for (var event of EventEmiters) {
-                  (<any>angulartics2)[event].subscribe((x: any) => EventSpy(x));
-                  (<any>angulartics2)[event].next(`test: ${event}`);
-                  expect(EventSpy).toHaveBeenCalledWith(`test: ${event}`);
-                }
-              });
+            fixture = tcb.createFakeAsync(RootCmp);
+            for (var event of EventEmiters) {
+              (<any>angulartics2)[event].subscribe((x: any) => EventSpy(x));
+              (<any>angulartics2)[event].next(`test: ${event}`);
+              advance(fixture);
+              expect(EventSpy).toHaveBeenCalledWith(`test: ${event}`);
+            }
           })));
 
     });
